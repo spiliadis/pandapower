@@ -449,40 +449,24 @@ def pp_hook(d, net=None):
         return d
 
 
-def encrypt_string(s, key, compress=True):
+def encrypt_string(s, key):
     from cryptography.fernet import Fernet
     import hashlib
     import base64
     key_base = hashlib.sha256(key.encode())
     key = base64.urlsafe_b64encode(key_base.digest())
     cipher_suite = Fernet(key)
-    
-    s = s.encode()
-    if compress:
-        import zlib
-        s = zlib.compress(s)
-    s = cipher_suite.encrypt(s)
-    s = s.decode()
-    return s
+    return cipher_suite.encrypt(s.encode()).decode()
 
 
-def decrypt_string(s, key):
+def decrypt_string(jsonstring, key):
     from cryptography.fernet import Fernet
     import hashlib
     import base64
     key_base = hashlib.sha256(key.encode())
     key = base64.urlsafe_b64encode(key_base.digest())
     cipher_suite = Fernet(key)
-    
-    s = s.encode()
-    s = cipher_suite.decrypt(s)
-    try:
-        import zlib
-        s = zlib.decompress(s)
-    except:
-        pass
-    s = s.decode()
-    return s
+    return cipher_suite.decrypt(jsonstring.encode()).decode()
 
 
 class JSONSerializableClass(object):

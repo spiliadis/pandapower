@@ -58,12 +58,22 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
     if iwamoto:
         dVm, dVa = zeros_like(Vm), zeros_like(Va)
 
+    # evaluate F(x0)
+    [F, PQ, SB] = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
+    converged = _check_for_convergence(F, tol)
+
     if v_debug:
         Vm_it = Vm.copy()
         Va_it = Va.copy()
+        F_it = F.copy()
+        PQ_it = PQ.copy()
+        SB_it = SB.copy()
     else:
         Vm_it = None
         Va_it = None
+        F_it = None
+        PQ_it = None
+        SB_it = None
 
     # set up indexing for updating V
     pvpq = r_[pv, pq]
@@ -83,9 +93,7 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
     j5 = j4
     j6 = j4 + npq  # j5:j6 - V mag of pq buses
 
-    # evaluate F(x0)
-    F = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
-    converged = _check_for_convergence(F, tol)
+
 
     Ybus = Ybus.tocsr()
     J = None
@@ -116,24 +124,35 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
         if v_debug:
             Vm_it = column_stack((Vm_it, Vm))
             Va_it = column_stack((Va_it, Va))
+            F_it = column_stack((F_it, F))
+            PQ_it = column_stack((PQ_it, PQ))
+            SB_it = column_stack((SB_it, SB))
 
         if voltage_depend_loads:
             Sbus = makeSbus(baseMVA, bus, gen, vm=Vm)
 
-        F = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
+        [F, PQ, SB] = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
 
         converged = _check_for_convergence(F, tol)
 
-    return V, converged, i, J, Vm_it, Va_it
+    return V, converged, i, J, Vm_it, Va_it, F_it, PQ_it, SB_it
 
 
 def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     # evalute F(x)
-    mis = V * conj(Ybus * V) - Sbus
+    PQx = V * conj(Ybus * V)
+    mis =  V * conj(Ybus * V) - Sbus
+    #print(mis)
     F = r_[mis[pv].real,
            mis[pq].real,
            mis[pq].imag]
-    return F
+    PQ = r_[PQx[pv].real,
+            PQx[pq].real,
+            PQx[pq].imag]
+    SB = r_[Sbus[pv].real,
+            Sbus[pq].real,
+            Sbus[pq].imag]
+    return F, PQ, SB
 
 
 def _check_for_convergence(F, tol):

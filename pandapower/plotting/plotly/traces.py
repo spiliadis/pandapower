@@ -694,6 +694,6 @@ def draw_traces(traces, on_map=False, map_style='basic', showlegend=True, figsiz
     else:
         from plotly.offline import plot as plot
 
-    plot(fig, filename=filename)
+    #plot(fig, filename=filename)
 
     return fig
