@@ -120,18 +120,18 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
         V = Vm * exp(1j * Va)
         Vm = abs(V)  # update Vm and Va again in case
         Va = angle(V)  # we wrapped around with a negative Vm
+        
+        if voltage_depend_loads:
+            Sbus = makeSbus(baseMVA, bus, gen, vm=Vm)
 
+        [F, PQ, SB] = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
+    
         if v_debug:
             Vm_it = column_stack((Vm_it, Vm))
             Va_it = column_stack((Va_it, Va))
             F_it = column_stack((F_it, F))
             PQ_it = column_stack((PQ_it, PQ))
             SB_it = column_stack((SB_it, SB))
-
-        if voltage_depend_loads:
-            Sbus = makeSbus(baseMVA, bus, gen, vm=Vm)
-
-        [F, PQ, SB] = _evaluate_Fx(Ybus, V, Sbus, pv, pq)
 
         converged = _check_for_convergence(F, tol)
 
