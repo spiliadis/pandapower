@@ -146,7 +146,7 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     PQx = V * conj(Ybus * V)
     mis =  V * conj(Ybus * V) - Sbus
     #print(mis)
-    k = len(Ybus)
+    k = Ybus.getnnz(axis=1)
     F = r_[mis[pv].real,
            mis[pq].real,
            mis[pq].imag]
