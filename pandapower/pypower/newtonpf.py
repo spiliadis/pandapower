@@ -146,6 +146,7 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     PQx = V * conj(Ybus * V)
     mis =  V * conj(Ybus * V) - Sbus
     #print(mis)
+    k = len(Ybus)
     F = r_[mis[pv].real,
            mis[pq].real,
            mis[pq].imag]
@@ -155,9 +156,7 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     SB = r_[Sbus[pv].real,
             Sbus[pq].real,
             Sbus[pq].imag]
-    APQ = r_[PQx[0],
-             PQx[1], 
-             PQx[3]]
+    APQ = r_[{PQx[i],} for i in range[0,k+1]]
     return F, PQ, SB, APQ
 
 
