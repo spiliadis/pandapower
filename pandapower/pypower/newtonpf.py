@@ -11,7 +11,7 @@
 """Solves the power flow using a full Newton's method.
 """
 
-from numpy import angle, exp, linalg, conj, r_, Inf, arange, zeros, max, zeros_like, column_stack, dstack
+from numpy import angle, exp, linalg, conj, r_, Inf, arange, zeros, max, zeros_like, column_stack, array
 from scipy.sparse.linalg import spsolve
 
 from pandapower.pf.iwamoto_multiplier import _iwamoto_step
@@ -134,7 +134,8 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
             F_it = column_stack((F_it, F))
             PQ_it = column_stack((PQ_it, PQ))
             SB_it = column_stack((SB_it, SB))
-            APQ_it = dstack(APQ_it, APQ)
+            APQ_it = column_stack((APQ_it, APQ))
+            print(APQ_it)
 
         converged = _check_for_convergence(F, tol)
 
@@ -146,6 +147,7 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     PQx = V * conj(Ybus * V)
     mis =  V * conj(Ybus * V) - Sbus
     print(PQx)
+    print(type(PQx))
     k = Ybus.getnnz(axis=1)
     F = r_[mis[pv].real,
            mis[pq].real,
@@ -156,7 +158,9 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     SB = r_[Sbus[pv].real,
             Sbus[pq].real,
             Sbus[pq].imag]
-    APQ = PQx
+    APQ = array(PQx)
+    print(APQ)
+    print(type(APQ))
 
     return F, PQ, SB, APQ
 
