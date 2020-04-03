@@ -135,7 +135,6 @@ def newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options):
             PQ_it = column_stack((PQ_it, PQ))
             SB_it = column_stack((SB_it, SB))
             APQ_it = column_stack((APQ_it, APQ))
-            print(APQ_it)
 
         converged = _check_for_convergence(F, tol)
 
@@ -146,8 +145,6 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     # evalute F(x)
     PQx = V * conj(Ybus * V)
     mis =  V * conj(Ybus * V) - Sbus
-    print(PQx)
-    print(type(PQx))
     k = Ybus.getnnz(axis=1)
     F = r_[mis[pv].real,
            mis[pq].real,
@@ -159,8 +156,6 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
             Sbus[pq].real,
             Sbus[pq].imag]
     APQ = array(PQx)
-    print(APQ)
-    print(type(APQ))
 
     return F, PQ, SB, APQ
 
