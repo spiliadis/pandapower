@@ -155,7 +155,7 @@ def _evaluate_Fx(Ybus, V, Sbus, pv, pq):
     SB = r_[Sbus[pv].real,
             Sbus[pq].real,
             Sbus[pq].imag]
-    APQ = PQx
+    APQ = r_[PQx]
     return F, PQ, SB, APQ
 
 
