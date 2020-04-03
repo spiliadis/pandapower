@@ -126,7 +126,7 @@ def _run_ac_pf_without_qlims_enforced(ppci, options):
     Sbus = _get_Sbus(ppci, options["recycle"])
 
     # run the newton power  flow
-    V, success, iterations, J, Vm_it, Va_it, F_it, PQ_it, SB_it, APQ_it = newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options)
+    V, success, iterations, J, Vm_it, Va_it, F_it, PQ_it, SB_it = newtonpf(Ybus, Sbus, V0, pv, pq, ppci, options)
 
     # keep "internal" variables in  memory / net["_ppc"]["internal"] -> needed for recycle.
     ppci = _store_internal(ppci, {"J": J, "Vm_it": Vm_it, "Va_it": Va_it, "F_it": F_it, "PQ_it": PQ_it, "SB_it": SB_it, "bus": bus, "gen": gen, "branch": branch,
